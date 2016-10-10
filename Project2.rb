@@ -2,47 +2,38 @@ require 'open-uri'
 open('http_access_log', 'wb') do |file|
   file << open('http://s3.amazonaws.com/tcmg412-fall2016/http_access_log').read
 end
-puts "finished"
+apache_logs = File.readlines "http_access_log"
 
-puts "Now Reading File."
-rules = {}
-rules[:status] = 404           # only accept hits where the status response is 404
-log_results = []
+def parse(logs) 
 
+  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
 
-fourerr = {
-rules[:status] => 404           # only accept hits where the status response is 404
-}
-require 'apache_log_parser'
-'apache_log_parser'
-log_results.push(ApacheLogParser.parse("http_access_log", fourerr) do |parsed|
-  parsed[:ip]         #=> "12.12.12.12"
-  parsed[:date]       #=> "21/Jan/2010"
-  parsed[:day]        #=> 21
-  parsed[:month]      #=> "Jan"
-  parsed[:year]       #=> 2010
-  parsed[:hour]       #=> 14
-  parsed[:zone]       #=> "-0800"
-  parsed[:method]     #=> "GET"
-  parsed[:http_ver]   #=> "1.1"
-  parsed[:resource]   #=> "/some/page.php"
-  parsed[:status]     #=> 200
-  parsed[:size]       #=> "7047"
-  parsed[:referer]    #=> "-"
-  parsed[:user_agent] #=> "Mozilla/5.0 (Macintosh; U; Intel..."
-end)
-puts "#{log_results}"
+  result_parse = []
+  logs.each do |log|
+    parser = log.scan(apache_regex)[0]
 
+    # If can't parse the log line for any reason.
+    if log.scan(apache_regex)[0].nil?
+      puts "Can't parse: #{log}\n\n"
+      next
+    end
 
-
-
-
-
-
-
-
-
-
+    parse = 
+        {
+          :ip         => parser[0],
+          :user       => parser[1],
+          :time       => parser[2],
+          :method     => parser[3],
+          :uri_path   => parser[4],
+          :protocol   => parser[5],
+          :code       => parser[6],
+          :res_size   => parser[7],
+          :referer    => parser[8],
+          :user_agent => parser[9]
+        }
+    result_parse << parse
+  end
+end 
 
 
 
