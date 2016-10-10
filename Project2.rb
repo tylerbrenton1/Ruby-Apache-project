@@ -2,7 +2,49 @@ require 'open-uri'
 open('http_access_log', 'wb') do |file|
   file << open('http://s3.amazonaws.com/tcmg412-fall2016/http_access_log').read
 end
-print "finished"
+apache_logs = File.readlines "http_access_log"
+
+def parse(logs) 
+
+  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
+
+  result_parse = []
+  logs.each do |log|
+    parser = log.scan(apache_regex)[0]
+
+    # If can't parse the log line for any reason.
+    if log.scan(apache_regex)[0].nil?
+      puts "Can't parse: #{log}\n\n"
+      next
+    end
+
+    parse = 
+        {
+          :ip         => parser[0],
+          :user       => parser[1],
+          :time       => parser[2],
+          :method     => parser[3],
+          :uri_path   => parser[4],
+          :protocol   => parser[5],
+          :code       => parser[6],
+          :res_size   => parser[7],
+          :referer    => parser[8],
+          :user_agent => parser[9]
+        }
+    result_parse << parse
+  end
+end 
+
+
+
+
+
+
+
+
+
+
+
 
   #Once you download the file, you will be parsing the file in order to answer several questions:
 #How many total requests were made in the time period represented in the log?
