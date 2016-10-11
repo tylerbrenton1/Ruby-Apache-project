@@ -14,8 +14,7 @@ def parse(logs)
 
     # If can't parse the log line for any reason.
     if log.scan(apache_regex)[0].nil?
-      puts "Can't parse: #{log}\n\n"
-      next
+       next
     end
 
     parse = 
@@ -33,8 +32,12 @@ def parse(logs)
         }
     result_parse << parse
   end
+
+  return result_parse
 end 
 
+require 'pp'
+pp parse(apache_logs)
 
 
 
