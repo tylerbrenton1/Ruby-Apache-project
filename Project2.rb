@@ -19,18 +19,11 @@ def parse(logs)
       next
     end
 
-    parse = 
+     parse = 
         {
-          :ip         => parser[0],
-          :user       => parser[1],
-          :time       => parser[2],
-          :method     => parser[3],
-          :uri_path   => parser[4],
-          :protocol   => parser[5],
-          :code       => parser[6],
-          :res_size   => parser[7],
-          :referer    => parser[8],
-          :user_agent => parser[9]
+          :date       => parser[1],
+          :file       => parser[3],
+          :code       => parser[4],
         }
     result_parse << parse
   end
