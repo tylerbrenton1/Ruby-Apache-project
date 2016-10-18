@@ -57,8 +57,7 @@ def parse(logs)
 
   return file
 end 
-file_log = []
-file_log << parse(flog)
+file_log = parse(flog)
 file_name = file_log.map{|x|x.values}.flatten.inspect
 
 #This pulls out the respones code
@@ -104,7 +103,7 @@ class Numeric
     self.to_f / n.to_f * 100.0
   end
 end
-Puts "ALL INFO BELOW"
+puts "ALL INFO BELOW"
 
 
 puts "300 count need to be removed once done #{threecodes}"
