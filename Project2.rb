@@ -58,7 +58,13 @@ def parse(logs)
   return file
 end 
 file_log = parse(flog)
-file_name = file_log.map{|x|x.values}.flatten.inspect
+file_name = file_log.group_by { |n| n }.values.max_by(&:size).first
+puts " The most requested file is #{file_name}"
+
+
+
+
+
 
 #This pulls out the respones code
 puts "Now doing some other thing."
@@ -113,7 +119,7 @@ fourpercent = fourcodes.percent_of(tot_codes).round
 puts " The percent of error request is #{fourpercent}."
 threepercent = threecodes.percent_of(tot_codes).round
 puts " The percent of redirect request is #{threepercent}."
-
+puts " The most requested file is #{file_name}"
 
 
 
