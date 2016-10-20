@@ -3,130 +3,74 @@ require 'open-uri'
 open('http_access_log', 'wb') do |file|
   file << open('http://s3.amazonaws.com/tcmg412-fall2016/http_access_log').read
 end
-puts "Now doing a thing."
-#This pulls out the date
-dlog = File.readlines "http_access_log"
-def parse(logs) 
+LOCAL_FILE = 'http_access_log'
+totals = {}
+files = {}
+counts = {}
+errors = []
+dates = {}
+File.foreach(LOCAL_FILE) do |line|
 
-  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
+	# Simple split on spaces is good enough here?
+	#vals = line.split(" ")
 
- date = []
-  logs.each do |log|
-    parser = log.scan(apache_regex)[0]
+	# Nope. Use Regex
+	vals = /.*\[(.*) \-[0-9]{4}\] \"([A-Z]+) (.+?)( HTTP.*\"|\") ([2-5]0[0-9]) .*/.match(line)
 
-    # If can't parse the log line for any reason.
-    if log.scan(apache_regex)[0].nil?
-     
-      next
-    end
+	# Sanity check the line -- capture the error and move on
+	if !vals then
+		errors.push(line)
+		next
+	end
 
-     parse = 
-        {
-          :date       => parser[1]
-        }
-    date << parse
-  end
+	# Grab the data from the fields we care about
+	req_date = Date.strptime(vals[1], '%d/%b/%Y:%H:%M:%S')
+	d_str = req_date.strftime('%Y-%m')
+	http_verb = vals[2]
+	file_name = vals[3]
+	stat_code = vals[5]
+	# Add the file name to the hash if not there; increment otherwise
+	files[file_name] = (if files[file_name] then files[file_name]+=1 else 1 end)
 
-  return date
+	# Add the status code to the hash if not there; increment otherwise
+	counts[stat_code] = (if counts[stat_code] then counts[stat_code]+=1 else 1 end)
+
+	# Check if we're on a new date; if so, add a new array to the hash
+	unless totals[d_str] then totals[d_str] = [] end
+
+	# Add the whole line into the array for that day
+	totals[d_str].push(line)
+	dates[d_str] = (if dates[d_str] then dates[d_str]+=1 else 1 end)
+
 end
-date_log = parse(dlog)
-puts "Now doing another thing."
-#This pulls out the files requested
+#working with the files
+filessort = files.sort_by{|file,request| request}
+puts "The least requested file is #{filessort.first}"
+puts "the most requested file is #{filessort.last}"
 
-counts = Hash.new(0)
-date_log.each { |name| counts[name] += 1 }
-puts "#{counts}"
-flog = File.readlines "http_access_log" 
-def parse(logs) 
-
-  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
-
- file = []
-  logs.each do |log|
-    parser = log.scan(apache_regex)[0]
-
-    # If can't parse the log line for any reason.
-    if log.scan(apache_regex)[0].nil?
-     
-      next
-    end
-
-     parse = 
-        {
-         :file       => parser[3]
-        }
-    file << parse
-  end
-
-  return file
-end 
-file_log = parse(flog)
-file_name = file_log.group_by { |n| n }.values.max_by(&:size).first
-
-
-
-
-#This pulls out the respones code
-puts "Now doing some other thing."
-clog = File.readlines "http_access_log"
-def parse(logs) 
-
-  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
-
- code = []
-  logs.each do |log|
-    parser = log.scan(apache_regex)[0]
-
-    # If can't parse the log line for any reason.
-    if log.scan(apache_regex)[0].nil?
-     
-      next
-    end
-
-     parse = 
-        {
-		  :code       => parser[4]
-        }
-    code << parse
-  end
-
-  return code
-end
-finished_code_parse = (parse(clog))
-codes_only = finished_code_parse.map{|x|x.values}.flatten.inspect
-tot_codes = codes_only.count('/...,/') # keep this
-puts "#{tot_codes} This should equal all total counts and need to be removed once done"
-#This handels the 400 codes
-fourcodes = codes_only.count('/4../')
+#codes
+fourcodes = 0
 #This handels the 300 codes
-threecodes = codes_only.count('/3../')
-#this handels 200 codes
-twocodes = codes_only.count('/2../')
+threecodes = 0
 
-
+counts.each do |code, count|
+	if code[0] == "3" then threecodes += count end
+	if code[0] == "4" then fourcodes += count end
+end
+puts "300 count need to be removed once done #{threecodes}"
+puts "400 count need to be removed once done #{fourcodes}"
+#this handels percentage
 class Numeric
   def percent_of(n)
     self.to_f / n.to_f * 100.0
   end
 end
-puts "ALL INFO BELOW"
 
 
-puts "300 count need to be removed once done #{threecodes}"
-puts "200 count  need to be removed once done#{twocodes}"
-puts "400 count need to be removed once done #{fourcodes}"
-fourpercent = fourcodes.percent_of(tot_codes).round
-puts " The percent of error request is #{fourpercent}."
-threepercent = threecodes.percent_of(tot_codes).round
-puts " The percent of redirect request is #{threepercent}."
-puts " The most requested file is #{file_name}"
-
-
-
-  #Once you download the file, you will be parsing the file in order to answer several questions:
-#How many total requests were made in the time period represented in the log? DONE
+ #Once you download the file, you will be parsing the file in order to answer several questions:
+#How many total requests were made in the time period represented in the log? 
 #How many requests were made on each day? 
-#What percentage of the requests were not successful (any 4xx status code)? DONE
-#What percentage of the requests were redirected elsewhere (any 3xx codes)? DONE
+#What percentage of the requests were not successful (any 4xx status code)? 
+#What percentage of the requests were redirected elsewhere (any 3xx codes)? 
 #What was the most-requested file? DOne
-#What was the least-requested file?
+#What was the least-requested file? DOne
