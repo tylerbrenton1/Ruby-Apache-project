@@ -43,6 +43,48 @@ File.foreach(LOCAL_FILE) do |line|
 	dates[d_str] = (if dates[d_str] then dates[d_str]+=1 else 1 end)
 
 end
+<<<<<<< HEAD
+=======
+date_log = []
+date_log << parse(dlog)
+puts "Now doing another thing."
+#This pulls out the files requested
+flog = File.readlines "http_access_log" 
+def parse(logs) 
+
+  apache_regex = /\A(?<ip_address>\S+) \S+ \S+ \[(?<time>[^\]]+)\] "(?<method>GET|POST) (?<url>\S+) \S+?" (?<status>\d+) (?<bytes>\S+)/
+
+ file = []
+  logs.each do |log|
+    parser = log.scan(apache_regex)[0]
+
+    # If can't parse the log line for any reason.
+    if log.scan(apache_regex)[0].nil?
+     
+      next
+    end
+
+     parse = 
+        {
+         :file       => parser[3]
+        }
+    file << parse
+  end
+
+  return file
+end 
+file_log = parse(flog)
+file_name = file_log.group_by { |n| n }.values.max_by(&:size).first
+puts " The most requested file is #{file_name}"
+
+
+
+
+
+
+#This pulls out the respones code
+puts "Now doing some other thing."
+clog = File.readlines "http_access_log"
 
 #codes
 fourcodes = 0
@@ -81,14 +123,7 @@ puts "#{threepercent}% of request ended in a redirect"
  #Once you download the file, you will be parsing the file in order to answer several questions:
 #How many total requests were made in the time period represented in the log? 
 #How many requests were made on each day? 
-<<<<<<< HEAD
 #What percentage of the requests were not successful (any 4xx status code)? Done
 #What percentage of the requests were redirected elsewhere (any 3xx codes)? done
 #What was the most-requested file? DOne
 #What was the least-requested file? DOne
-=======
-#What percentage of the requests were not successful (any 4xx status code)? DONE
-#What percentage of the requests were redirected elsewhere (any 3xx codes)? DONE
-#What was the most-requested file?
-#What was the least-requested file?
->>>>>>> parent of 791b29c... adjusted date count
