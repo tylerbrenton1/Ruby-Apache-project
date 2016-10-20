@@ -29,10 +29,13 @@ def parse(logs)
 
   return date
 end
-date_log = []
-date_log << parse(dlog)
+date_log = parse(dlog)
 puts "Now doing another thing."
 #This pulls out the files requested
+
+counts = Hash.new(0)
+date_log.each { |name| counts[name] += 1 }
+puts "#{counts}"
 flog = File.readlines "http_access_log" 
 def parse(logs) 
 
@@ -59,9 +62,6 @@ def parse(logs)
 end 
 file_log = parse(flog)
 file_name = file_log.group_by { |n| n }.values.max_by(&:size).first
-puts " The most requested file is #{file_name}"
-
-
 
 
 
@@ -128,5 +128,5 @@ puts " The most requested file is #{file_name}"
 #How many requests were made on each day? 
 #What percentage of the requests were not successful (any 4xx status code)? DONE
 #What percentage of the requests were redirected elsewhere (any 3xx codes)? DONE
-#What was the most-requested file?
+#What was the most-requested file? DOne
 #What was the least-requested file?
