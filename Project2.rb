@@ -57,20 +57,35 @@ counts.each do |code, count|
 	if code[0] == "3" then threecodes += count end
 	if code[0] == "4" then fourcodes += count end
 end
-puts "300 count need to be removed once done #{threecodes}"
-puts "400 count need to be removed once done #{fourcodes}"
+#This findes to lines for the persentage. Their is probaly some way to do this easyier.
+bigtotal = 0
+counts.each do |code, count|
+	if code[0] == "3" then bigtotal += count end
+	if code[0] == "4" then bigtotal += count end
+	if code[0] == "2" then bigtotal += count end
+	if code[0] == "5" then bigtotal += count end
+end
 #this handels percentage
 class Numeric
-  def percent_of(n)
-    self.to_f / n.to_f * 100.0
+  def percent_of(a)
+    self.to_f / a.to_f * 100.0
   end
 end
-
+puts "#{totals}"
+#this calculates persentages
+fourpercent = fourcodes.percent_of(bigtotal).round
+threepercent = threecodes.percent_of(bigtotal).round
+puts "#{dates}"
+#all data goes under here
+puts "The least requested file is #{filessort.first}"
+puts "the most requested file is #{filessort.last}"
+puts "#{fourpercent}% of request ended in an error"
+puts "#{threepercent}% of request ended in a redirect"
 
  #Once you download the file, you will be parsing the file in order to answer several questions:
 #How many total requests were made in the time period represented in the log? 
 #How many requests were made on each day? 
-#What percentage of the requests were not successful (any 4xx status code)? 
-#What percentage of the requests were redirected elsewhere (any 3xx codes)? 
+#What percentage of the requests were not successful (any 4xx status code)? Done
+#What percentage of the requests were redirected elsewhere (any 3xx codes)? done
 #What was the most-requested file? DOne
 #What was the least-requested file? DOne
