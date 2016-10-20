@@ -43,10 +43,8 @@ File.foreach(LOCAL_FILE) do |line|
 	dates[d_str] = (if dates[d_str] then dates[d_str]+=1 else 1 end)
 
 end
-
-#This pulls out the respones code
-puts "Now doing some other thing."
-clog = File.readlines "http_access_log"
+#working with the files
+filessort = files.sort_by{|file,request| request}
 
 #codes
 fourcodes = 0
@@ -71,19 +69,19 @@ class Numeric
     self.to_f / a.to_f * 100.0
   end
 end
-puts "#{totals}"
 #this calculates persentages
 fourpercent = fourcodes.percent_of(bigtotal).round
 threepercent = threecodes.percent_of(bigtotal).round
-puts "#{dates}"
+
 #all data goes under here
 puts "The least requested file is #{filessort.first}"
 puts "the most requested file is #{filessort.last}"
 puts "#{fourpercent}% of request ended in an error"
 puts "#{threepercent}% of request ended in a redirect"
 
- #Once you download the file, you will be parsing the file in order to answer several questions:
-#How many total requests were made in the time period represented in the log? 
+
+  #Once you download the file, you will be parsing the file in order to answer several questions:
+#How many total requests were made in the time period represented in the log? DONE
 #How many requests were made on each day? 
 #What percentage of the requests were not successful (any 4xx status code)? Done
 #What percentage of the requests were redirected elsewhere (any 3xx codes)? done
