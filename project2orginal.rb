@@ -91,7 +91,6 @@ end
 finished_code_parse = (parse(clog))
 codes_only = finished_code_parse.map{|x|x.values}.flatten.inspect
 tot_codes = codes_only.count('/...,/') # keep this
-puts "#{tot_codes} This should equal all total counts and need to be removed once done"
 #This handels the 400 codes
 fourcodes = codes_only.count('/4../')
 #This handels the 300 codes
