@@ -46,11 +46,11 @@ end
 #working with the files
 filessort = files.sort_by{|file,request| request}
 
-#codes
+#This handels the 400 codes
 fourcodes = 0
 #This handels the 300 codes
 threecodes = 0
-
+#thiscounts all codes
 counts.each do |code, count|
 	if code[0] == "3" then threecodes += count end
 	if code[0] == "4" then fourcodes += count end
@@ -72,13 +72,15 @@ end
 #this calculates persentages
 fourpercent = fourcodes.percent_of(bigtotal).round
 threepercent = threecodes.percent_of(bigtotal).round
-
 #all data goes under here
+dates.each do |months, lines|
+	puts "   the total for this month is #{months}: #{lines}"
+end
 puts "The least requested file is #{filessort.first}"
 puts "the most requested file is #{filessort.last}"
 puts "#{fourpercent}% of request ended in an error"
 puts "#{threepercent}% of request ended in a redirect"
-
+puts "the total number of request it #{bigtotal}"
 
   #Once you download the file, you will be parsing the file in order to answer several questions:
 #How many total requests were made in the time period represented in the log? DONE
