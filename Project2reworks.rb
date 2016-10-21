@@ -63,6 +63,19 @@ counts.each do |code, count|
 	if code[0] == "2" then bigtotal += count end
 	if code[0] == "5" then bigtotal += count end
 end
+# Calculate a grand total by adding the counts from each month
+#   Also, write the lines out to per-month log entries`
+grand_total = 0
+LOG_PATH = 'logs/'
+Dir.mkdir(LOG_PATH) unless File.exists?(LOG_PATH)
+totals.each do |key, arr|
+	grand_total += arr.count
+	file_name = LOG_PATH + key + '.log'
+	File.open(file_name, "w+") do |f|
+		f.puts(arr)
+	end
+	puts "  Writing new file to disk: #{file_name} (#{arr.count} entries)"
+end
 #this handels percentage
 class Numeric
   def percent_of(a)
@@ -74,7 +87,7 @@ fourpercent = fourcodes.percent_of(bigtotal).round
 threepercent = threecodes.percent_of(bigtotal).round
 #all data goes under here
 dates.each do |months, lines|
-	puts "   the total for this month is #{months}: #{lines}"
+	puts "   the total for #{months} is #{lines}"
 end
 puts "The least requested file is #{filessort.first}"
 puts "the most requested file is #{filessort.last}"
@@ -84,7 +97,7 @@ puts "the total number of request it #{bigtotal}"
 
   #Once you download the file, you will be parsing the file in order to answer several questions:
 #How many total requests were made in the time period represented in the log? DONE
-#How many requests were made on each day? 
+#How many requests were made on each day? Done
 #What percentage of the requests were not successful (any 4xx status code)? Done
 #What percentage of the requests were redirected elsewhere (any 3xx codes)? done
 #What was the most-requested file? DOne
